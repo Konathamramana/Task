@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+  
+ .big_div {
+    background: url('http://info.eps.surrey.ac.uk/logos/transbugs.gif') no-repeat center center;
+    background-size: 160px 100px;
+    width: 300px;
+    height: 200px;
+    border: 1px solid black;
+    margin-bottom: 10px;
+}
+.task{
+    margin: 10px 20px 10px 10px;
+}
+    </style>
+   
+</head>
+<body>
+
+    <div class="task ">
+       <input type="file" accept="image/*" onchange="loadFile(event)">
+           <img id="output"/>
+   
+                    <!-- Color -->
+                    <div class="big_div"></div>
+                    <fieldset>
+                        <legend>Pick color:</legend>
+                        <p>
+                            <label for="color_hex">Hex color:</label>
+                            <input id="color_hex" type="text" placeholder="#ccc" />
+                        </p>
+                        <p>
+                            <button class="change_color">Change color</button>
+                        </p>
+                  </fieldset>
+
+    </div>
+    <script>
+      var loadFile = function(event) {
+        var output = document.getElementById('output');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function() {
+          URL.revokeObjectURL(output.src) // free memory
+        }
+      };
+
+      function encodeHex(s) {
+    s = s.substring(1, 7);
+    if (s.length < 6) {
+        s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+    }
+    return encodeRGB(
+    parseInt(s[0] + s[1], 16), parseInt(s[2] + s[3], 16), parseInt(s[4] + s[5], 16));
+};
+
+function encodeRGB(r, g, b) {
+    return encode_triplet(0, r, g) + encode_triplet(b, 255, 255);
+};
+
+function encode_triplet(e1, e2, e3) {
+    var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    enc1 = e1 >> 2;
+    enc2 = ((e1 & 3) << 4) | (e2 >> 4);
+    enc3 = ((e2 & 15) << 2) | (e3 >> 6);
+    enc4 = e3 & 63;
+    return keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+};
+
+function generatePixel(color) {
+    return "data:image/gif;base64,R0lGODlhAQABAPAA" + color + "/yH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+};
+
+
+var imageDiv = $('.big_div');
+var originalImage = imageDiv.css('background-image');
+$('.change_color').on('click', function (e) {
+    var hex = $('#color_hex').val();
+    var color = encodeHex(hex);
+    var data = generatePixel(color);
+	imageDiv.css({
+        'background-image': originalImage + ', url(' + data + ')'
+    });
+});
+
+    </script>
+
+</body>
+</html>
